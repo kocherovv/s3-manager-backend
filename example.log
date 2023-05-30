@@ -4665,3 +4665,245 @@ com.amazonaws.services.s3.model.AmazonS3Exception: Access Denied (Service: Amazo
 2023-05-29T21:29:13.945-03:00  INFO 53145 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2023-05-29T21:29:13.949-03:00  INFO 53145 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2023-05-29T21:29:13.951-03:00  INFO 53145 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2023-05-29T21:58:02.047-03:00  INFO 56603 --- [main] net.example.ApplicationRunner            : Starting ApplicationRunner using Java 19.0.1 with PID 56603 (/Users/kocherov/IdeaProjects/Study-Project-Restapi-Spring/target/classes started by kocherov in /Users/kocherov/IdeaProjects/Study-Project-Restapi-Spring)
+2023-05-29T21:58:02.057-03:00  INFO 56603 --- [main] net.example.ApplicationRunner            : No active profile set, falling back to 1 default profile: "default"
+2023-05-29T21:58:02.864-03:00  INFO 56603 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-05-29T21:58:02.894-03:00  INFO 56603 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 25 ms. Found 2 JPA repository interfaces.
+2023-05-29T21:58:03.555-03:00  INFO 56603 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-05-29T21:58:03.561-03:00  INFO 56603 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-05-29T21:58:03.562-03:00  INFO 56603 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2023-05-29T21:58:03.618-03:00  INFO 56603 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-05-29T21:58:03.618-03:00  INFO 56603 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1486 ms
+2023-05-29T21:58:03.811-03:00  INFO 56603 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-05-29T21:58:04.037-03:00  INFO 56603 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@108b121f
+2023-05-29T21:58:04.038-03:00  INFO 56603 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-05-29T21:58:04.471-03:00  INFO 56603 --- [main] liquibase.lockservice                    : Successfully acquired change log lock
+2023-05-29T21:58:04.591-03:00  INFO 56603 --- [main] liquibase.changelog                      : Reading from study_schema_spring.databasechangelog
+2023-05-29T21:58:04.633-03:00  INFO 56603 --- [main] liquibase.lockservice                    : Successfully released change log lock
+2023-05-29T21:58:04.730-03:00  INFO 56603 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-05-29T21:58:04.770-03:00  INFO 56603 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.1.7.Final
+2023-05-29T21:58:04.974-03:00  INFO 56603 --- [main] SQL dialect                              : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2023-05-29T21:58:04.996-03:00  INFO 56603 --- [main] o.h.e.boot.internal.EnversServiceImpl    : Envers integration enabled? : true
+2023-05-29T21:58:05.122-03:00  INFO 56603 --- [main] o.h.e.c.i.m.AuditMetadataGenerator       : Adding properties for entity: net.example.domain.entity.User
+2023-05-29T21:58:05.123-03:00  INFO 56603 --- [main] o.h.e.c.i.m.AuditMetadataGenerator       : Adding properties for entity: net.example.domain.entity.File
+2023-05-29T21:58:05.127-03:00  INFO 56603 --- [main] .e.b.i.AdditionalJaxbMappingProducerImpl : Adding JAXB document mapping
+2023-05-29T21:58:05.289-03:00  INFO 56603 --- [main] org.hibernate.envers.boot                : HHH90005601: Envers-generated HBM mapping...
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<hibernate-mapping auto-import="false" xmlns="http://www.hibernate.org/xsd/orm/hbm">
+    <class discriminator-value="User" table="users_AUD" entity-name="net.example.domain.entity.User_AUD" abstract="false">
+        <composite-id name="originalId">
+            <key-property name="id">
+                <column name="id"/>
+                <type name="long">
+                    <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                    <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                    <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.Long</param>
+                    <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                    <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                    <param name="org.hibernate.type.ParameterType.propertyName">id</param>
+                </type>
+            </key-property>
+            <key-many-to-one class="net.example.domain.entity.Revision" name="REV">
+                <column name="REV"/>
+            </key-many-to-one>
+        </composite-id>
+        <property insert="true" name="REVTYPE" type="org.hibernate.envers.internal.entities.RevisionTypeType" update="false"/>
+        <property insert="true" name="createdAt" update="false">
+            <column name="created_at"/>
+            <type name="LocalDateTime">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.time.LocalDateTime</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">createdAt</param>
+            </type>
+        </property>
+        <property insert="true" name="createdBy" update="false">
+            <column name="created_by"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">createdBy</param>
+            </type>
+        </property>
+        <property insert="true" name="modifiedAt" update="false">
+            <column name="modified_at"/>
+            <type name="LocalDateTime">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.time.LocalDateTime</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">modifiedAt</param>
+            </type>
+        </property>
+        <property insert="true" name="modifiedBy" update="false">
+            <column name="modified_by"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">modifiedBy</param>
+            </type>
+        </property>
+        <property insert="true" name="email" update="false">
+            <column name="email"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">email</param>
+            </type>
+        </property>
+        <property insert="true" name="name" update="false">
+            <column name="name"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">name</param>
+            </type>
+        </property>
+        <property insert="true" name="password" update="false">
+            <column name="password"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">password</param>
+            </type>
+        </property>
+        <property insert="true" name="role" update="false">
+            <column name="role"/>
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">net.example.domain.enums.Role</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+    </class>
+</hibernate-mapping>
+
+2023-05-29T21:58:05.292-03:00  INFO 56603 --- [main] .e.b.i.AdditionalJaxbMappingProducerImpl : Adding JAXB document mapping
+2023-05-29T21:58:05.326-03:00  INFO 56603 --- [main] org.hibernate.envers.boot                : HHH90005601: Envers-generated HBM mapping...
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<hibernate-mapping auto-import="false" xmlns="http://www.hibernate.org/xsd/orm/hbm">
+    <class discriminator-value="File" table="file_AUD" entity-name="net.example.domain.entity.File_AUD" abstract="false">
+        <composite-id name="originalId">
+            <key-property name="id">
+                <column name="id"/>
+                <type name="long">
+                    <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                    <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                    <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.Long</param>
+                    <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                    <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                    <param name="org.hibernate.type.ParameterType.propertyName">id</param>
+                </type>
+            </key-property>
+            <key-many-to-one class="net.example.domain.entity.Revision" name="REV">
+                <column name="REV"/>
+            </key-many-to-one>
+        </composite-id>
+        <property insert="true" name="REVTYPE" type="org.hibernate.envers.internal.entities.RevisionTypeType" update="false"/>
+        <property insert="true" name="createdAt" update="false">
+            <column name="created_at"/>
+            <type name="LocalDateTime">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.time.LocalDateTime</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">createdAt</param>
+            </type>
+        </property>
+        <property insert="true" name="createdBy" update="false">
+            <column name="created_by"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">createdBy</param>
+            </type>
+        </property>
+        <property insert="true" name="modifiedAt" update="false">
+            <column name="modified_at"/>
+            <type name="LocalDateTime">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.time.LocalDateTime</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">modifiedAt</param>
+            </type>
+        </property>
+        <property insert="true" name="modifiedBy" update="false">
+            <column name="modified_by"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">modifiedBy</param>
+            </type>
+        </property>
+        <property insert="true" name="extension" update="false">
+            <column name="extension"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">extension</param>
+            </type>
+        </property>
+        <property insert="true" name="name" update="false">
+            <column name="name"/>
+            <type name="string">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.String</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.File</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">name</param>
+            </type>
+        </property>
+        <property insert="true" name="user_id" update="false">
+            <column name="user_id"/>
+            <type name="long">
+                <param name="org.hibernate.type.ParameterType.primaryKey">false</param>
+                <param name="org.hibernate.type.ParameterType.dynamic">true</param>
+                <param name="org.hibernate.type.ParameterType.returnedClass">java.lang.Long</param>
+                <param name="org.hibernate.type.ParameterType.accessType">field</param>
+                <param name="org.hibernate.type.ParameterType.entityClass">net.example.domain.entity.User</param>
+                <param name="org.hibernate.type.ParameterType.propertyName">id</param>
+            </type>
+        </property>
+    </class>
+</hibernate-mapping>
+
+2023-05-29T21:58:05.797-03:00  INFO 56603 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-05-29T21:58:05.985-03:00  WARN 56603 --- [main] ocalVariableTableParameterNameDiscoverer : Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: net.example.database.repository.UserRepository
+2023-05-29T21:58:06.916-03:00  INFO 56603 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2023-05-29T21:58:07.023-03:00  INFO 56603 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@f3458af, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@20ac726c, org.springframework.security.web.context.SecurityContextHolderFilter@5f324d9f, org.springframework.security.web.header.HeaderWriterFilter@635791b7, org.springframework.security.web.authentication.logout.LogoutFilter@434896b0, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@43347199, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@3d1254b9, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@f48a79a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2aa143ba, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7abe3d53, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@75c2a35, org.springframework.security.web.access.ExceptionTranslationFilter@1e7b277a, org.springframework.security.web.access.intercept.AuthorizationFilter@7fd65f9a]
+2023-05-29T21:58:07.153-03:00  WARN 56603 --- [main] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2023-05-29T21:58:07.430-03:00  INFO 56603 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-05-29T21:58:07.445-03:00  INFO 56603 --- [main] net.example.ApplicationRunner            : Started ApplicationRunner in 6.114 seconds (process running for 7.249)
+2023-05-29T21:58:07.600-03:00  INFO 56603 --- [RMI TCP Connection(2)-127.0.0.1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-05-29T21:58:07.600-03:00  INFO 56603 --- [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2023-05-29T21:58:07.601-03:00  INFO 56603 --- [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

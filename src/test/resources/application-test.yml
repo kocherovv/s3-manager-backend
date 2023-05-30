@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: validate
+        default_schema:
+  liquibase:
+    default-schema:
+logging:
+  level:
+    root: ERROR

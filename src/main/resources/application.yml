@@ -1,0 +1,52 @@
+spring:
+  cloud:
+    aws:
+      s3:
+        enabled: false
+      region:
+        static: sa-east-1
+
+  application:
+    bucket:
+      name: kocherovv
+
+  datasource:
+    url: jdbc:postgresql://localhost:32768/postgres
+    username: postgres
+    password: postgrespw
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        current_session_context_class: thread
+        format_sql: true
+        show_sql: true
+        default_schema: study_schema_spring
+    open-in-view: false
+  liquibase:
+    default-schema: study_schema_spring
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 32374555421-lkjfu0rbup3vqaaikqb4tk74ovf0ckh6.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+
+  springdoc:
+    swagger-ui:
+      oauth:
+        client-id: 32374555421-lkjfu0rbup3vqaaikqb4tk74ovf0ckh6.apps.googleusercontent.com
+        client-secret: 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
+      oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: example.log
+    path: /
+

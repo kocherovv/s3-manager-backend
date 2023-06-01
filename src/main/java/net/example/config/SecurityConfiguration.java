@@ -1,12 +1,13 @@
 package net.example.config;
 
 import lombok.RequiredArgsConstructor;
-import net.example.domain.entity.User;
+import net.example.dto.UserCreateDto;
 import net.example.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -18,8 +19,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Set;
 
-import static net.example.domain.enums.Role.USER;
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -30,20 +29,17 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(urlConfig -> urlConfig
-                .requestMatchers("/login", "/user/registration", "/swagger-ui*").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .deleteCookies("JSESSIONID"))
             .formLogin(login -> login
-                .loginPage("/login")
                 .defaultSuccessUrl("/api/v1/files"))
             .oauth2Login(config -> config
-                .loginPage("/login")
                 .defaultSuccessUrl("/api/v1/files")
                 .userInfoEndpoint(userInfo -> userInfo
                     .oidcUserService(oidcUserService())));
@@ -59,10 +55,9 @@ public class SecurityConfiguration {
 
             if (userService.findByName(name).isEmpty()) {
 
-                userService.create(User.builder()
+                userService.create(UserCreateDto.builder()
                     .email(email)
                     .name(name)
-                    .role(USER)
                     .password(standardPassword)
                     .build());
             }

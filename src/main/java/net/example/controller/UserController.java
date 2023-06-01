@@ -3,6 +3,7 @@ package net.example.controller;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.User;
 import net.example.domain.enums.Role;
+import net.example.dto.UserCreateDto;
 import net.example.dto.UserReadDto;
 import net.example.mapper.UserReadMapper;
 import net.example.service.UserService;
@@ -10,14 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -27,7 +27,6 @@ public class UserController {
     private final UserReadMapper userReadMapper;
 
     @GetMapping
-    @ResponseBody
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public List<UserReadDto> findAll() {
 
@@ -37,7 +36,6 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public UserReadDto findById(@PathVariable("id") Long id) {
 
@@ -47,16 +45,14 @@ public class UserController {
     }
 
     @PostMapping
-    @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public String create(@RequestBody User user) {
-        userService.create(user);
+    public String create(@RequestBody UserCreateDto userCreateDto) {
+        userService.create(userCreateDto);
 
         return "redirect:/login";
     }
 
     @PutMapping("/{id}")
-    @ResponseBody
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public String update(@PathVariable("id") User user) {
 
@@ -66,7 +62,6 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public String delete(@PathVariable("id") Long id,
                          @AuthenticationPrincipal UserDetails userDetails) {

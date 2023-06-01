@@ -37,6 +37,7 @@ public class FileController {
 
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public List<FileInfoDto> findAll() {
 
         return fileService.findAll().stream()
@@ -44,6 +45,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public FileInfoDto findById(@PathVariable("id") Long id) {
 
         return fileService.findById(id)
@@ -52,6 +54,7 @@ public class FileController {
     }
 
     @GetMapping(value = "/{id}/view")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public ResponseEntity<Resource> openById(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable("id") Long id) {
 
@@ -65,6 +68,7 @@ public class FileController {
     }
 
     @GetMapping(value = "/{id}/download")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public ResponseEntity<Resource> download(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable("id") Long id) {
 
@@ -79,8 +83,8 @@ public class FileController {
     }
 
     @GetMapping(value = "/{id}/history")
-    public List<FileRevisionDto> getHistory(@AuthenticationPrincipal UserDetails userDetails,
-                                            @PathVariable("id") Long id) {
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
+    public List<FileRevisionDto> getHistory(@PathVariable("id") Long id) {
 
         return revisionService.findFileRevisions(id).stream()
             .map(fileRevisionDtoMapper::mapFrom)

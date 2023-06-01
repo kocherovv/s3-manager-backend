@@ -3,13 +3,13 @@ package net.example.service;
 import lombok.RequiredArgsConstructor;
 import net.example.database.repository.UserRepository;
 import net.example.domain.entity.User;
+import net.example.dto.UserCreateDto;
+import net.example.mapper.UserCreateMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final UserCreateMapper userCreateMapper;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -33,13 +33,9 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User create(User user) {
-        Optional.ofNullable(user.getPassword())
-            .filter(StringUtils::hasText)
-            .map(passwordEncoder::encode)
-            .ifPresent(user::setPassword);
+    public User create(UserCreateDto user) {
 
-        return userRepository.save(user);
+        return userRepository.save(userCreateMapper.mapFrom(user));
     }
 
     @Transactional

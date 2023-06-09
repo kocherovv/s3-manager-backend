@@ -8,12 +8,14 @@ import net.example.dto.UserReadDto;
 import net.example.mapper.UserReadMapper;
 import net.example.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,10 +48,11 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String create(@RequestBody UserCreateDto userCreateDto) {
-        userService.create(userCreateDto);
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<?> create(@RequestBody UserCreateDto userCreateDto) {
+        var user = userService.create(userCreateDto);
 
-        return "redirect:/login";
+        return ResponseEntity.created(URI.create("/user/" + user.getId())).build();
     }
 
     @PutMapping("/{id}")

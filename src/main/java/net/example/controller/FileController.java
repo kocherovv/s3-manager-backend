@@ -94,38 +94,40 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public String upload(@AuthenticationPrincipal UserDetails userDetails,
-                         @RequestBody MultipartFile multipartFile) {
+    public FileInfoDto upload(@AuthenticationPrincipal UserDetails userDetails,
+                                              @RequestBody MultipartFile multipartFile) {
 
-        return "redirect:/files/" + fileService.create(
-                userDetails,
-                fileMapper.mapFrom(multipartFile, userDetails),
-                multipartFile)
-            .getId();
+        return fileInfoDtoMapper.mapFrom(fileService.create(
+            userDetails,
+            fileMapper.mapFrom(multipartFile, userDetails),
+            multipartFile));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public String updateName(@AuthenticationPrincipal UserDetails userDetails,
-                             @PathVariable("id") Long id,
-                             @RequestBody File file) {
+    public ResponseEntity<?> updateName(@AuthenticationPrincipal UserDetails userDetails,
+                                             @PathVariable("id") Long id,
+                                             @RequestBody File file) {
 
         file.setId(id);
-        return fileService.updateName(userDetails, file)
-            .map(it -> "redirect:/files/{id}")
+        fileService.updateName(userDetails, file)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public String delete(@AuthenticationPrincipal UserDetails userDetails,
-                         @PathVariable("id") Long id) {
+    public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetails userDetails,
+                                    @PathVariable("id") Long id) {
 
         if (!fileService.deleteById(userDetails, id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return "redirect:/files";
+        return ResponseEntity
+            .noContent()
+            .build();
     }
 }

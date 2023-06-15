@@ -4,9 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import lombok.RequiredArgsConstructor;
 import net.example.dto.UserCreateDto;
+import net.example.dto.requestDto.JwtResponse;
 import net.example.security.jwt.JwtTokenUtil;
-import net.example.security.requestPojo.JwtResponse;
 import net.example.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,8 @@ public class Oauth2Google {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
 
-    private final static String callBackUrl = "http://localhost:8080/api/v1/oauth2/google/callback";
+    @Value("${spring.security.oauth2.google.redirect-url}")
+    private final String callBackUrl;
 
     @GetMapping
     public String authorizeWithGoogle() {

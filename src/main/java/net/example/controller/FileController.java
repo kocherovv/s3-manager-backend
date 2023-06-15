@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
 import net.example.dto.FileInfoDto;
 import net.example.dto.FileRevisionDto;
+import net.example.exception.NotFoundException;
 import net.example.mapper.FileInfoDtoMapper;
 import net.example.mapper.FileMapper;
 import net.example.mapper.FileRevisionDtoMapper;
@@ -58,8 +59,7 @@ public class FileController {
     public ResponseEntity<Resource> openById(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable("id") Long id) {
 
-        var content = fileService.downloadById(userDetails, id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var content = fileService.downloadById(userDetails, id);
 
         return ResponseEntity.ok()
             .contentLength(content.getObjectMetadata().getContentLength())
@@ -72,8 +72,7 @@ public class FileController {
     public ResponseEntity<Resource> download(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable("id") Long id) {
 
-        var content = fileService.downloadById(userDetails, id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var content = fileService.downloadById(userDetails, id);
 
         return ResponseEntity.ok()
             .header("Content-Disposition", "attachment; filename=\"" + content.getKey() + "\"")
@@ -95,25 +94,28 @@ public class FileController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public FileInfoDto upload(@AuthenticationPrincipal UserDetails userDetails,
-                                              @RequestBody MultipartFile multipartFile) {
+                              @RequestBody MultipartFile multipartFile) {
 
-        return fileInfoDtoMapper.mapFrom(fileService.create(
-            userDetails,
-            fileMapper.mapFrom(multipartFile, userDetails),
-            multipartFile));
+        return fileInfoDtoMapper.mapFrom(
+            fileService.create(
+                userDetails,
+                fileMapper.mapFrom(multipartFile, userDetails),
+                multipartFile));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public ResponseEntity<?> updateName(@AuthenticationPrincipal UserDetails userDetails,
-                                             @PathVariable("id") Long id,
-                                             @RequestBody File file) {
+                                        @PathVariable("id") Long id,
+                                        @RequestBody File file) {
+        try {
+            file.setId(id);
+            fileService.updateName(userDetails, file);
 
-        file.setId(id);
-        fileService.updateName(userDetails, file)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")

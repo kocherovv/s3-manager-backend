@@ -25,7 +25,8 @@ public class FileRevisionDtoMapper implements Mapper<FileRevisionDto, Revision<L
             .createdBy(file.getCreatedBy())
             .modifiedBy(file.getModifiedBy())
             .rev(metadata.getRequiredRevisionNumber())
-            .revDate(metadata.getRevisionInstant().map(it -> LocalDateTime.ofInstant(it, ZoneId.systemDefault()))
+            .revDate(metadata.getRevisionInstant()
+                .map(it -> LocalDateTime.ofInstant(it, ZoneId.systemDefault()))
                 .orElse(null))
             .revType(metadata.getRevisionType())
             .build();

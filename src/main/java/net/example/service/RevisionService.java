@@ -1,10 +1,10 @@
 package net.example.service;
 
 import lombok.RequiredArgsConstructor;
-import net.example.database.repository.FileRepository;
-import net.example.database.repository.UserRepository;
 import net.example.domain.entity.File;
 import net.example.domain.entity.User;
+import net.example.repository.FileRepository;
+import net.example.repository.UserRepository;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;

@@ -2,10 +2,10 @@ package net.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import net.example.dto.UserCreateDto;
+import net.example.dto.requestDto.JwtResponse;
+import net.example.dto.requestDto.LoginRequest;
+import net.example.dto.requestDto.SignUpRequest;
 import net.example.security.jwt.JwtTokenUtil;
-import net.example.security.requestPojo.JwtResponse;
-import net.example.security.requestPojo.LoginRequest;
-import net.example.security.requestPojo.SignUpRequest;
 import net.example.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

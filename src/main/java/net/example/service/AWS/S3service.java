@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class S3service {
 
     private final AmazonS3 s3Client;
 

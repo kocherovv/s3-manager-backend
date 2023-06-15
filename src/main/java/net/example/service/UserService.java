@@ -1,10 +1,13 @@
 package net.example.service;
 
 import lombok.RequiredArgsConstructor;
-import net.example.database.repository.UserRepository;
 import net.example.domain.entity.User;
 import net.example.dto.UserCreateDto;
+import net.example.dto.UserReadDto;
+import net.example.exception.NotFoundException;
 import net.example.mapper.UserCreateMapper;
+import net.example.mapper.UserReadMapper;
+import net.example.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +25,8 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    private final UserReadMapper userReadMapper;
+
     private final UserCreateMapper userCreateMapper;
 
     public List<User> findAll() {
@@ -33,16 +38,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User create(UserCreateDto user) {
+    public UserReadDto create(UserCreateDto user) {
 
-        return userRepository.save(userCreateMapper.mapFrom(user));
+        return userReadMapper.mapFrom(
+            userRepository.save(
+                userCreateMapper.mapFrom(user)));
     }
 
     @Transactional
-    public Optional<User> update(User changedUser) {
+    public User update(User changedUser) {
         return userRepository.findById(changedUser.getId())
             .map(entity -> buildUser(changedUser, entity))
-            .map(userRepository::saveAndFlush);
+            .map(userRepository::save)
+            .orElseThrow(NotFoundException::new);
     }
 
     @Transactional
@@ -53,14 +61,6 @@ public class UserService implements UserDetailsService {
                 return true;
             })
             .orElse(false);
-    }
-
-    private User buildUser(User user, User entity) {
-        entity.setName(user.getName());
-        entity.setEmail(user.getEmail());
-        entity.setRole(user.getRole());
-
-        return entity;
     }
 
     public Optional<User> findByName(String name) {
@@ -75,5 +75,13 @@ public class UserService implements UserDetailsService {
                 user.getPassword(),
                 Collections.singleton(user.getRole())
             )).orElseThrow(() -> new UsernameNotFoundException("Not found User:" + username));
+    }
+
+    private User buildUser(User user, User entity) {
+        entity.setName(user.getName());
+        entity.setEmail(user.getEmail());
+        entity.setRole(user.getRole());
+
+        return entity;
     }
 }

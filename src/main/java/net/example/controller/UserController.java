@@ -57,11 +57,11 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public String update(@PathVariable("id") User user) {
+    public UserReadDto update(@PathVariable("id") User user) {
 
-        return userService.update(user)
-            .map(it -> "redirect:/users/{id}")
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var updated = userService.update(user);
+
+        return userReadMapper.mapFrom(updated);
     }
 
     @DeleteMapping("/{id}")

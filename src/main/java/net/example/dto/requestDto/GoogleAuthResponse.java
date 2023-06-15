@@ -1,4 +1,4 @@
-package net.example.security.requestPojo;
+package net.example.dto.requestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class GoogleAuthResponse {
 
-    private String username;
-    private String password;
+    private String success;
+
+    private String userAuthenticatedSuccessfully;
 }

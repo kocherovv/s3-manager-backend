@@ -2,9 +2,10 @@ package net.example.service;
 
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
-import net.example.database.repository.FileRepository;
 import net.example.domain.entity.File;
-import net.example.service.AWS.S3Service;
+import net.example.exception.NotFoundException;
+import net.example.repository.FileRepository;
+import net.example.service.AWS.S3service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ public class FileService {
 
     private final FileRepository fileRepository;
 
-    private final S3Service s3Service;
+    private final S3service s3Service;
 
     public List<File> findAll() {
         return fileRepository.findAll();
@@ -42,18 +43,16 @@ public class FileService {
     }
 
     @Transactional
-    public Optional<File> updateName(UserDetails user,
-                                     File changedFile) {
+    public File updateName(UserDetails user,
+                           File changedFile) {
 
-        var entity = fileRepository.findById(changedFile.getId());
-
-        entity.ifPresent(file -> s3Service.renameFile(
-            user,
-            file.getName(),
-            changedFile.getName()));
-
-        return entity.map(oldFile -> buildFile(changedFile, oldFile))
-            .map(fileRepository::saveAndFlush);
+        return fileRepository.findById(changedFile.getId())
+            .stream()
+            .peek(it -> s3Service.renameFile(user, it.getName(), changedFile.getName()))
+            .map(oldFile -> buildFile(changedFile, oldFile))
+            .map(fileRepository::save)
+            .findFirst()
+            .orElseThrow(NotFoundException::new);
     }
 
     @Transactional
@@ -67,14 +66,15 @@ public class FileService {
             .orElse(false);
     }
 
-    public Optional<S3Object> downloadById(UserDetails user, Long id) {
+    public S3Object downloadById(UserDetails user, Long id) {
         return fileRepository.findById(id)
-            .map(file -> s3Service.downloadFile(user, file.getName()));
+            .map(file -> s3Service.downloadFile(user, file.getName()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    private File buildFile(File file, File entity) {
-        entity.setName(file.getName());
+    private File buildFile(File changedFile, File oldFile) {
+        oldFile.setName(changedFile.getName());
 
-        return entity;
+        return oldFile;
     }
 }

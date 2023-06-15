@@ -45,10 +45,8 @@ public class SecurityConfiguration {
 
             .authorizeHttpRequests(urlConfig -> urlConfig
                 .requestMatchers(
-                    "/oauth2/**",
-                    "/login/**",
                     "/api/v1/auth/**",
-                    "/api/v1/oauth2/**",
+                    "/api/v1/oauth2/google",
                     "/v2/api-docs",
                     "/v3/api-docs",
                     "/v3/api-docs/**",
@@ -61,11 +59,6 @@ public class SecurityConfiguration {
                     "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated())
 
-            /*.oauth2Login(config -> config
-                .defaultSuccessUrl("/api/v1/")
-                .userInfoEndpoint(userInfo -> userInfo
-                    .oidcUserService(oidcUserService())))*/
-
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
@@ -76,6 +69,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    //for oauth2 with session (now use JWT, see Oauth2Google)
     private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
         return userRequest -> {
             String name = userRequest.getIdToken().getClaim("name");

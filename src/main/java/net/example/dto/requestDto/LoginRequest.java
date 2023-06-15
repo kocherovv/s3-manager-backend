@@ -1,4 +1,4 @@
-package net.example.security.requestPojo;
+package net.example.dto.requestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageResponse {
+public class LoginRequest {
 
-    private String message;
+    private String username;
+    private String password;
 }

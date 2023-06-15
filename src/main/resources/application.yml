@@ -16,8 +16,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:32768/postgres
-    username: postgres
-    password: postgrespw
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -33,19 +33,12 @@ spring:
 
   security:
     oauth2:
-      client:
-        registration:
-          google:
-            client-id: 32374555421-lkjfu0rbup3vqaaikqb4tk74ovf0ckh6.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+      google:
+        redirect-url: http://localhost:8080/api/v1/oauth2/google/callback
 
-  springdoc:
-    swagger-ui:
-      oauth:
-        client-id: 32374555421-lkjfu0rbup3vqaaikqb4tk74ovf0ckh6.apps.googleusercontent.com
-        client-secret: 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
-      oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
+oauth2:
+    authorizationUrl: http://localhost:8080/oauth2/authorization/google
+    tokenUrl: https://www.googleapis.com/oauth2/v4/token
 
 logging:
   level:
@@ -53,4 +46,3 @@ logging:
   file:
     name: example.log
     path: /
-

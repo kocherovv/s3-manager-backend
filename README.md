@@ -3,7 +3,7 @@ It's a simple Springboot REST api. Its use AWS SDK for connecting with S3.
 I use 3 entities: User, File and Revision. I impl entity listener pattern with Spring.
 This project has not yet been written and does not use class packages.
 
-# Descripsion 
+# Description 
 Users can register, login and read/download the files.
 Moderators, can upload, update and delete the files, read users. 
 Admin can do all that he want, update/delete users, change roles and other. 

@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.example.domain.entity.UserDetailsCustom;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +22,7 @@ public class S3service {
     private String bucketName;
 
     @SneakyThrows
-    public void uploadFile(UserDetails user,
+    public void uploadFile(UserDetailsCustom user,
                            String fileName,
                            String extension,
                            MultipartFile multipartFile) {
@@ -41,17 +41,17 @@ public class S3service {
     }
 
     @SneakyThrows
-    public S3Object downloadFile(UserDetails user,
+    public S3Object downloadFile(UserDetailsCustom user,
                                  String fileName) {
         return s3Client.getObject(bucketName, buildS3FileName(user, fileName));
     }
 
-    public void deleteFile(UserDetails user,
+    public void deleteFile(UserDetailsCustom user,
                            String fileName) {
         s3Client.deleteObject(bucketName, buildS3FileName(user, fileName));
     }
 
-    public void renameFile(UserDetails user,
+    public void renameFile(UserDetailsCustom user,
                            String oldName, String newName) {
 
         var oldS3Name = buildS3FileName(user, oldName);
@@ -66,7 +66,7 @@ public class S3service {
         s3Client.deleteObject(bucketName, oldS3Name);
     }
 
-    private static String buildS3FileName(UserDetails user, String fileName) {
+    private static String buildS3FileName(UserDetailsCustom user, String fileName) {
         return user.getUsername()
             .replaceAll("\\s", "") + "/" + fileName;
     }

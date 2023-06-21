@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserCreateMapper implements Mapper<User, UserCreateDto>{
+public class UserCreateMapper implements Mapper<User, UserCreateDto> {
 
     private final PasswordEncoder passwordEncoder;
 

@@ -2,6 +2,7 @@ package net.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
+import net.example.domain.entity.UserDetailsCustom;
 import net.example.dto.FileInfoDto;
 import net.example.dto.FileRevisionDto;
 import net.example.exception.NotFoundException;
@@ -17,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -56,7 +56,7 @@ public class FileController {
 
     @GetMapping(value = "/{id}/view")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
-    public ResponseEntity<Resource> openById(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<Resource> openById(@AuthenticationPrincipal UserDetailsCustom userDetails,
                                              @PathVariable("id") Long id) {
 
         var content = fileService.downloadById(userDetails, id);
@@ -69,10 +69,10 @@ public class FileController {
 
     @GetMapping(value = "/{id}/download")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
-    public ResponseEntity<Resource> download(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<Resource> download(@AuthenticationPrincipal UserDetailsCustom userDetailsCustom,
                                              @PathVariable("id") Long id) {
 
-        var content = fileService.downloadById(userDetails, id);
+        var content = fileService.downloadById(userDetailsCustom, id);
 
         return ResponseEntity.ok()
             .header("Content-Disposition", "attachment; filename=\"" + content.getKey() + "\"")
@@ -93,7 +93,7 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public FileInfoDto upload(@AuthenticationPrincipal UserDetails userDetails,
+    public FileInfoDto upload(@AuthenticationPrincipal UserDetailsCustom userDetails,
                               @RequestBody MultipartFile multipartFile) {
 
         return fileInfoDtoMapper.mapFrom(
@@ -105,7 +105,7 @@ public class FileController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public ResponseEntity<?> updateName(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<?> updateName(@AuthenticationPrincipal UserDetailsCustom userDetails,
                                         @PathVariable("id") Long id,
                                         @RequestBody File file) {
         try {
@@ -121,10 +121,10 @@ public class FileController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetailsCustom userDetailsCustom,
                                     @PathVariable("id") Long id) {
 
-        if (!fileService.deleteById(userDetails, id)) {
+        if (!fileService.deleteById(userDetailsCustom, id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 

@@ -3,10 +3,10 @@ package net.example.service;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
+import net.example.domain.entity.UserDetailsCustom;
 import net.example.exception.NotFoundException;
 import net.example.repository.FileRepository;
 import net.example.service.AWS.S3service;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +32,7 @@ public class FileService {
     }
 
     @Transactional
-    public File create(UserDetails user, File entity, MultipartFile multipartFile) {
+    public File create(UserDetailsCustom user, File entity, MultipartFile multipartFile) {
         s3Service.uploadFile(
             user,
             entity.getName(),
@@ -43,7 +43,7 @@ public class FileService {
     }
 
     @Transactional
-    public File updateName(UserDetails user,
+    public File updateName(UserDetailsCustom user,
                            File changedFile) {
 
         return fileRepository.findById(changedFile.getId())
@@ -56,7 +56,7 @@ public class FileService {
     }
 
     @Transactional
-    public boolean deleteById(UserDetails user, Long id) {
+    public boolean deleteById(UserDetailsCustom user, Long id) {
         return fileRepository.findById(id)
             .map(entity -> {
                 s3Service.deleteFile(user, entity.getName());
@@ -66,7 +66,7 @@ public class FileService {
             .orElse(false);
     }
 
-    public S3Object downloadById(UserDetails user, Long id) {
+    public S3Object downloadById(UserDetailsCustom user, Long id) {
         return fileRepository.findById(id)
             .map(file -> s3Service.downloadFile(user, file.getName()))
             .orElseThrow(NotFoundException::new);

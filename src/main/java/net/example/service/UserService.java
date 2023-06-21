@@ -2,6 +2,7 @@ package net.example.service;
 
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.User;
+import net.example.domain.entity.UserDetailsCustom;
 import net.example.dto.UserCreateDto;
 import net.example.dto.UserReadDto;
 import net.example.exception.NotFoundException;
@@ -70,9 +71,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByName(username)
-            .map(user -> new org.springframework.security.core.userdetails.User(
+            .map(user -> new UserDetailsCustom(
                 user.getName(),
-                user.getPassword(),
                 Collections.singleton(user.getRole())
             )).orElseThrow(() -> new UsernameNotFoundException("Not found User:" + username));
     }

@@ -10,8 +10,7 @@ import net.example.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -66,10 +65,9 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public String delete(@PathVariable("id") Long id,
-                         @AuthenticationPrincipal UserDetails userDetails) {
+    public String delete(@PathVariable("id") Long id) {
 
-        var currentUser = userService.findByName(userDetails.getUsername())
+        var currentUser = userService.findByName(SecurityContextHolder.getContext().getAuthentication().getName())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
 
         if (currentUser.getRole() == Role.ADMIN) {

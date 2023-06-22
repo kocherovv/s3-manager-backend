@@ -3,7 +3,6 @@ package net.example.service;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
-import net.example.domain.entity.UserDetailsCustom;
 import net.example.exception.NotFoundException;
 import net.example.repository.FileRepository;
 import net.example.service.AWS.S3service;
@@ -32,9 +31,8 @@ public class FileService {
     }
 
     @Transactional
-    public File create(UserDetailsCustom user, File entity, MultipartFile multipartFile) {
+    public File create(File entity, MultipartFile multipartFile) {
         s3Service.uploadFile(
-            user,
             entity.getName(),
             entity.getExtension(),
             multipartFile);
@@ -43,12 +41,11 @@ public class FileService {
     }
 
     @Transactional
-    public File updateName(UserDetailsCustom user,
-                           File changedFile) {
+    public File updateName(File changedFile) {
 
         return fileRepository.findById(changedFile.getId())
             .stream()
-            .peek(it -> s3Service.renameFile(user, it.getName(), changedFile.getName()))
+            .peek(it -> s3Service.renameFile(it.getName(), changedFile.getName()))
             .map(oldFile -> buildFile(changedFile, oldFile))
             .map(fileRepository::save)
             .findFirst()
@@ -56,19 +53,19 @@ public class FileService {
     }
 
     @Transactional
-    public boolean deleteById(UserDetailsCustom user, Long id) {
+    public boolean deleteById(Long id) {
         return fileRepository.findById(id)
             .map(entity -> {
-                s3Service.deleteFile(user, entity.getName());
+                s3Service.deleteFile(entity.getName());
                 fileRepository.delete(entity);
                 return true;
             })
             .orElse(false);
     }
 
-    public S3Object downloadById(UserDetailsCustom user, Long id) {
+    public S3Object downloadById(Long id) {
         return fileRepository.findById(id)
-            .map(file -> s3Service.downloadFile(user, file.getName()))
+            .map(file -> s3Service.downloadFile(file.getName()))
             .orElseThrow(NotFoundException::new);
     }
 

@@ -2,10 +2,10 @@ package net.example.mapper;
 
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
-import net.example.domain.entity.UserDetailsCustom;
 import net.example.exception.NotFoundException;
 import net.example.model.AppStatusCode;
 import net.example.service.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,11 +23,14 @@ public class FileMapper implements Mapper<File, MultipartFile> {
             .build();
     }
 
-    public File mapFrom(MultipartFile source, UserDetailsCustom userDetailsCustom) {
+    public File mapWithPrincipal(MultipartFile source) {
         return File.builder()
             .name(source.getOriginalFilename())
             .extension(source.getContentType())
-            .user(userService.findByName(userDetailsCustom.getUsername())
+            .user(userService.findByName(SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName())
                 .orElseThrow(() -> new NotFoundException(AppStatusCode.NOT_FOUND_EXCEPTION)))
             .build();
     }

@@ -2,8 +2,7 @@ package net.example.mapper;
 
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
-import net.example.exception.NotFoundException;
-import net.example.model.AppStatusCode;
+import net.example.domain.entity.User;
 import net.example.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,11 @@ public class FileMapper implements Mapper<File, MultipartFile> {
                     .getContext()
                     .getAuthentication()
                     .getName())
-                .orElseThrow(() -> new NotFoundException(AppStatusCode.NOT_FOUND_EXCEPTION)))
+                .orElse(
+                    User.builder()
+                    .id(0L)
+                    .name("System")
+                    .build()))
             .build();
     }
 }

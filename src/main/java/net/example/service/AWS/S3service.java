@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +29,6 @@ public class S3service {
         metadata.setContentType(extension);
         metadata.setContentLength(multipartFile.getSize());
 
-        fileName = buildS3FileName(fileName);
-
         s3Client.putObject(
             bucketName,
             fileName,
@@ -40,34 +36,22 @@ public class S3service {
             metadata);
     }
 
-    @SneakyThrows
     public S3Object downloadFile(String fileName) {
-        return s3Client.getObject(bucketName, buildS3FileName(fileName));
+        return s3Client.getObject(bucketName, fileName);
     }
 
     public void deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, buildS3FileName(fileName));
+        s3Client.deleteObject(bucketName, fileName);
     }
 
     public void renameFile(String oldName, String newName) {
 
-        var oldS3Name = buildS3FileName(oldName);
-        var newS3Name = buildS3FileName(newName);
-
         s3Client.copyObject(
             bucketName,
-            oldS3Name,
+            oldName,
             bucketName,
-            newS3Name);
+            newName);
 
-        s3Client.deleteObject(bucketName, oldS3Name);
-    }
-
-    private String buildS3FileName(String fileName) {
-        var principal = (UserDetails) SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getPrincipal();
-
-        return principal.getUsername().replaceAll("\\s", "") + "/" + fileName;
+        s3Client.deleteObject(bucketName, oldName);
     }
 }

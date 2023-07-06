@@ -32,12 +32,12 @@ public class FileService {
 
     @Transactional
     public File create(File entity, MultipartFile multipartFile) {
-        s3Service.uploadFile(
-            entity.getName(),
-            entity.getExtension(),
-            multipartFile);
+            s3Service.uploadFile(
+                entity.getName(),
+                entity.getExtension(),
+                multipartFile);
 
-        return fileRepository.save(entity);
+            return fileRepository.save(entity);
     }
 
     @Transactional

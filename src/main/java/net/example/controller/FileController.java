@@ -52,29 +52,30 @@ public class FileController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping(value = "/{id}/view")
+    @GetMapping( "/{id}/view")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public ResponseEntity<Resource> openById(@PathVariable("id") Long id) {
 
-        var content = fileService.downloadById(id);
+        var s3Object = fileService.downloadById(id);
 
         return ResponseEntity.ok()
-            .contentLength(content.getObjectMetadata().getContentLength())
-            .contentType(MediaType.parseMediaType(content.getObjectMetadata().getContentType()))
-            .body(new InputStreamResource(content.getObjectContent()));
+            .header("Content-Disposition", "inline; filename=\"" + s3Object.getKey() + "\"")
+            .contentLength(s3Object.getObjectMetadata().getContentLength())
+            .contentType(MediaType.parseMediaType(s3Object.getObjectMetadata().getContentType()))
+            .body(new InputStreamResource(s3Object.getObjectContent()));
     }
 
     @GetMapping(value = "/{id}/download")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public ResponseEntity<Resource> download(@AuthenticationPrincipal @PathVariable("id") Long id) {
 
-        var content = fileService.downloadById(id);
+        var s3Object = fileService.downloadById(id);
 
         return ResponseEntity.ok()
-            .header("Content-Disposition", "attachment; filename=\"" + content.getKey() + "\"")
-            .contentLength(content.getObjectMetadata().getContentLength())
-            .contentType(MediaType.parseMediaType(content.getObjectMetadata().getContentType()))
-            .body(new InputStreamResource(content.getObjectContent()));
+            .header("Content-Disposition", "attachment; filename=\"" + s3Object.getKey() + "\"")
+            .contentLength(s3Object.getObjectMetadata().getContentLength())
+            .contentType(MediaType.parseMediaType(s3Object.getObjectMetadata().getContentType()))
+            .body(new InputStreamResource(s3Object.getObjectContent()));
     }
 
     @GetMapping(value = "/{id}/history")
@@ -89,10 +90,10 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
-    public FileInfoDto upload(@RequestBody MultipartFile multipartFile) {
+    public ResponseEntity<FileInfoDto> upload(@RequestBody MultipartFile multipartFile) {
 
-        return fileInfoDtoMapper.mapFrom(
-            fileService.create(fileMapper.mapWithPrincipal(multipartFile), multipartFile));
+            return ResponseEntity.ok(fileInfoDtoMapper.mapFrom(
+                fileService.create(fileMapper.mapWithPrincipal(multipartFile), multipartFile)));
     }
 
     @PutMapping("/{id}")

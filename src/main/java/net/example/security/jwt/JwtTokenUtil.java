@@ -35,6 +35,16 @@ public class JwtTokenUtil {
         return claimsResolver.apply(claims);
     }
 
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userDetails.getUsername());
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        var username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
             .setSigningKey(getSignInKey())
@@ -48,9 +58,9 @@ public class JwtTokenUtil {
         return expiration.before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
@@ -59,15 +69,5 @@ public class JwtTokenUtil {
             .setExpiration(new Date(System.currentTimeMillis() + expiration))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

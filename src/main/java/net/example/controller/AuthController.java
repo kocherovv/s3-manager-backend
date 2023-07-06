@@ -14,10 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -53,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> authUser(@RequestBody SignUpRequest registrationDto) {
+    public ResponseEntity<?> registrationUser(@RequestBody SignUpRequest registrationDto) {
         try {
             userService.create(UserCreateDto.builder()
                 .email(registrationDto.getEmail())
@@ -64,6 +61,24 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authorizationHeader) {
+        var token = authorizationHeader.substring(7);
+        var principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (jwtTokenUtil.validateToken(token, principal)) {
+            var jwt = jwtTokenUtil.generateToken(principal);
+
+            return ResponseEntity.ok(
+                JwtResponse.builder()
+                    .token(jwt)
+                    .username(principal.getUsername())
+                    .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }

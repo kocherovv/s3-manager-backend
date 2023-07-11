@@ -1,9 +1,11 @@
 package net.example.service;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
 import net.example.exception.NotFoundException;
+import net.example.mapper.FileMapper;
 import net.example.repository.FileRepository;
 import net.example.service.AWS.S3service;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class FileService {
 
     private final S3service s3Service;
 
+    private final FileMapper fileMapper;
+
     public List<File> findAll() {
         return fileRepository.findAll();
     }
@@ -31,13 +35,11 @@ public class FileService {
     }
 
     @Transactional
-    public File create(File entity, MultipartFile multipartFile) {
-            s3Service.uploadFile(
-                entity.getName(),
-                entity.getExtension(),
-                multipartFile);
+    public File create(MultipartFile multipartFile) throws AmazonS3Exception {
+        s3Service.uploadFile(multipartFile);
 
-            return fileRepository.save(entity);
+        return fileRepository.save(
+            fileMapper.mapWithPrincipal(multipartFile));
     }
 
     @Transactional

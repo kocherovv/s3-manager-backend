@@ -32,9 +32,9 @@ public class FileMapper implements Mapper<File, MultipartFile> {
                     .getName())
                 .orElse(
                     User.builder()
-                    .id(0L)
-                    .name("System")
-                    .build()))
+                        .id(1L)
+                        .name("System")
+                        .build()))
             .build();
     }
 }

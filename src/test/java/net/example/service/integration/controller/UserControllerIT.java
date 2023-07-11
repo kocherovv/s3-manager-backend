@@ -10,4 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 public class UserControllerIT extends IntegrationTestBase {
 
     private final MockMvc mockMvc;
+
+
 }

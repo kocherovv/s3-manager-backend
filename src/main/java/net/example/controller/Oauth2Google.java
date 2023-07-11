@@ -44,8 +44,7 @@ public class Oauth2Google {
         var tokenResponse = tokenRequest.execute();
         var googleTokenResponse = flow.createAndStoreCredential(tokenResponse, null);
 
-        var accessToken = googleTokenResponse.getAccessToken();
-        var googleIdToken = googleIdTokenVerifier.verify(accessToken);
+        var googleIdToken = googleIdTokenVerifier.verify(googleTokenResponse.getAccessToken());
 
         if (googleIdToken != null) {
             var payload = googleIdToken.getPayload();

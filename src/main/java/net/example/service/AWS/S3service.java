@@ -1,6 +1,7 @@
 package net.example.service.AWS;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @Service
@@ -20,18 +23,20 @@ public class S3service {
     @Value("${spring.application.bucket.name}")
     private String bucketName;
 
-    @SneakyThrows
-    public void uploadFile(String fileName,
-                           String extension,
-                           MultipartFile multipartFile) {
+    @SneakyThrows(IOException.class)
+    public void uploadFile(MultipartFile multipartFile) throws AmazonS3Exception {
+
+        if (s3Client.doesObjectExist(bucketName, multipartFile.getOriginalFilename())) {
+            throw new AmazonS3Exception("File with the same name already exist in the bucket");
+        }
 
         var metadata = new ObjectMetadata();
-        metadata.setContentType(extension);
+        metadata.setContentType(multipartFile.getContentType());
         metadata.setContentLength(multipartFile.getSize());
 
         s3Client.putObject(
             bucketName,
-            fileName,
+            multipartFile.getOriginalFilename(),
             multipartFile.getInputStream(),
             metadata);
     }

@@ -66,8 +66,8 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public String delete(@PathVariable("id") Long id) {
-
-        var currentUser = userService.findByName(SecurityContextHolder.getContext().getAuthentication().getName())
+        var currentUser = userService.findByName(
+            SecurityContextHolder.getContext().getAuthentication().getName())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
 
         if (currentUser.getRole() == Role.ADMIN) {

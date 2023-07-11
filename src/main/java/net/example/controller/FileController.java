@@ -1,12 +1,12 @@
 package net.example.controller;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
 import net.example.dto.FileInfoDto;
 import net.example.dto.FileRevisionDto;
 import net.example.exception.NotFoundException;
 import net.example.mapper.FileInfoDtoMapper;
-import net.example.mapper.FileMapper;
 import net.example.mapper.FileRevisionDtoMapper;
 import net.example.service.FileService;
 import net.example.service.RevisionService;
@@ -32,7 +32,6 @@ public class FileController {
     private final RevisionService revisionService;
 
     private final FileInfoDtoMapper fileInfoDtoMapper;
-    private final FileMapper fileMapper;
     private final FileRevisionDtoMapper fileRevisionDtoMapper;
 
     @GetMapping
@@ -52,7 +51,7 @@ public class FileController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping( "/{id}/view")
+    @GetMapping("/{id}/view")
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR','USER')")
     public ResponseEntity<Resource> openById(@PathVariable("id") Long id) {
 
@@ -91,9 +90,13 @@ public class FileController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     public ResponseEntity<FileInfoDto> upload(@RequestBody MultipartFile multipartFile) {
-
-            return ResponseEntity.ok(fileInfoDtoMapper.mapFrom(
-                fileService.create(fileMapper.mapWithPrincipal(multipartFile), multipartFile)));
+        try {
+            return ResponseEntity.ok(fileInfoDtoMapper.mapFrom(fileService.create(multipartFile)));
+        } catch (AmazonS3Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .header("message", e.getMessage())
+                .build();
+        }
     }
 
     @PutMapping("/{id}")

@@ -36,10 +36,6 @@ spring:
       google:
         redirect-url: http://localhost:8080/api/v1/oauth2/google/callback
 
-oauth2:
-    authorizationUrl: http://localhost:8080/oauth2/authorization/google
-    tokenUrl: https://www.googleapis.com/oauth2/v4/token
-
 logging:
   level:
     root: INFO

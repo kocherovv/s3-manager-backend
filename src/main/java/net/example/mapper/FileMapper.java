@@ -3,7 +3,7 @@ package net.example.mapper;
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
 import net.example.domain.entity.User;
-import net.example.service.UserService;
+import net.example.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,8 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 @RequiredArgsConstructor
 public class FileMapper implements Mapper<File, MultipartFile> {
-
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public File mapFrom(MultipartFile source) {
@@ -26,13 +25,12 @@ public class FileMapper implements Mapper<File, MultipartFile> {
         return File.builder()
             .name(source.getOriginalFilename())
             .extension(source.getContentType())
-            .user(userService.findByName(SecurityContextHolder
+            .user(userRepository.findByName(SecurityContextHolder
                     .getContext()
                     .getAuthentication()
                     .getName())
                 .orElse(
                     User.builder()
-                        .id(1L)
                         .name("System")
                         .build()))
             .build();

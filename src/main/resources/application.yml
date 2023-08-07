@@ -3,6 +3,11 @@ jwt:
   expiration: 86400000 # 1 day
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
   cloud:
     aws:
       s3:
@@ -34,7 +39,7 @@ spring:
   security:
     oauth2:
       google:
-        redirect-url: http://localhost:8080/api/v1/oauth2/google/callback
+
 
 logging:
   level:

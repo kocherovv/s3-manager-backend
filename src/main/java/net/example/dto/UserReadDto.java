@@ -22,8 +22,5 @@ public class UserReadDto {
     private final Role role;
 
     @Builder.Default
-    private final List<Long> eventsId = new ArrayList<>();
-
-    @Builder.Default
     private final List<Long> filesId = new ArrayList<>();
 }

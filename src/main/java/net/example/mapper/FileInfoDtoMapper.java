@@ -14,7 +14,7 @@ public class FileInfoDtoMapper implements Mapper<FileInfoDto, File> {
             .userId(source.getUser().getId())
             .name(source.getName())
             .extension(source.getExtension())
-            .updatedAt(source.getModifiedAt())
+            .modifiedAt(source.getModifiedAt())
             .createdAt(source.getCreatedAt())
             .build();
     }

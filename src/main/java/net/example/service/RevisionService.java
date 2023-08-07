@@ -2,15 +2,12 @@ package net.example.service;
 
 import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.File;
-import net.example.domain.entity.User;
 import net.example.repository.FileRepository;
-import net.example.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.history.Revision;
-import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,22 +15,11 @@ import java.util.Optional;
 public class RevisionService {
 
     private final FileRepository fileRepository;
-    private final UserRepository userRepository;
 
-    public Optional<Revision<Long, File>> findFileLastChangeRevision(Long id) {
-        return fileRepository.findLastChangeRevision(id);
+    public Page<Revision<Long, File>> findFileRevisions(Long fileId, Long fromPage, Long pageSize) {
+        var page = PageRequest.of(Math.toIntExact(fromPage / pageSize),
+            Math.toIntExact(pageSize));
+
+        return fileRepository.findRevisions(fileId, page);
     }
-
-    public Revisions<Long, File> findFileRevisions(Long id) {
-        return fileRepository.findRevisions(id);
-    }
-
-    public Optional<Revision<Long, User>> findUserLastChangeRevision(Long id) {
-        return userRepository.findLastChangeRevision(id);
-    }
-
-    public Revisions<Long, User> findUserRevisions(Long id) {
-        return userRepository.findRevisions(id);
-    }
-
 }

@@ -4,24 +4,21 @@ import lombok.RequiredArgsConstructor;
 import net.example.domain.entity.User;
 import net.example.dto.UserCreateDto;
 import net.example.dto.UserReadDto;
-import net.example.exception.NotFoundException;
+import net.example.exception.EntityNotFoundException;
 import net.example.mapper.UserCreateMapper;
 import net.example.mapper.UserReadMapper;
 import net.example.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
 
@@ -29,17 +26,32 @@ public class UserService implements UserDetailsService {
 
     private final UserCreateMapper userCreateMapper;
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<User> findAll(List<Long> ids, Long fromPage, Long pageSize) {
+        Iterable<User> users;
+
+        if (ids != null) {
+            users = userRepository.findAllById(ids);
+        } else if (fromPage != null & pageSize != null) {
+            var page = PageRequest.of(Math.toIntExact(fromPage / pageSize),
+                Math.toIntExact(pageSize));
+            users = userRepository.findAll(page);
+        } else {
+            users = userRepository.findAll();
+        }
+
+        return StreamSupport.stream(users.spliterator(), false)
+            .toList();
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public UserReadDto findById(Long id) {
+        return userRepository.findById(id)
+            .map(userReadMapper::mapFrom)
+            .orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with id=%d is not exist", id)));
     }
 
     @Transactional
     public UserReadDto create(UserCreateDto user) {
-
         return userReadMapper.mapFrom(
             userRepository.save(
                 userCreateMapper.mapFrom(user)));
@@ -50,7 +62,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(changedUser.getId())
             .map(entity -> buildUser(changedUser, entity))
             .map(userRepository::save)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new EntityNotFoundException(
+                String.format("User with id=%d is not exist", changedUser.getId())));
     }
 
     @Transactional
@@ -63,25 +76,10 @@ public class UserService implements UserDetailsService {
             .orElse(false);
     }
 
-    public Optional<User> findByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByName(username)
-            .map(user -> new org.springframework.security.core.userdetails.User(
-                user.getName(),
-                user.getPassword(),
-                Collections.singleton(user.getRole())
-            )).orElseThrow(() -> new UsernameNotFoundException("Not found User:" + username));
-    }
-
     private User buildUser(User user, User entity) {
         entity.setName(user.getName());
         entity.setEmail(user.getEmail());
         entity.setRole(user.getRole());
-
         return entity;
     }
 }

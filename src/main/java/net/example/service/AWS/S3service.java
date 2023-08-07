@@ -24,8 +24,7 @@ public class S3service {
     private String bucketName;
 
     @SneakyThrows(IOException.class)
-    public void uploadFile(MultipartFile multipartFile) throws AmazonS3Exception {
-
+    public void uploadFile(MultipartFile multipartFile) {
         if (s3Client.doesObjectExist(bucketName, multipartFile.getOriginalFilename())) {
             throw new AmazonS3Exception("File with the same name already exist in the bucket");
         }
@@ -50,7 +49,6 @@ public class S3service {
     }
 
     public void renameFile(String oldName, String newName) {
-
         s3Client.copyObject(
             bucketName,
             oldName,

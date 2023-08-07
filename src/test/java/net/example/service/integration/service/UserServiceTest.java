@@ -18,7 +18,7 @@ class UserServiceTest extends IntegrationTestBase {
 
     @Test
     void findAll() {
-        var result = userService.findAll();
+        var result = userService.findAll(null, null, null);
         assertEquals(3, result.size());
     }
 
